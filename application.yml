@@ -4,8 +4,8 @@ spring:
 
   # Base de datos — Session Pooler Supabase
   datasource:
-    url: jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres
-    username: postgres.tqffkpqrilbepibdmxdb
+    url: ${SUPABASE_DB_URL}
+    username: ${SUPABASE_DB_USER}
     password: ${SUPABASE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
