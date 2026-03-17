@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: duojava-backend
+
+  # Base de datos — Session Pooler Supabase
+  datasource:
+    url: jdbc:postgresql://aws-0-us-east-2.pooler.supabase.com:5432/postgres
+    username: postgres.tqffkpqrilbepibdmxdb
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: public
+
+  # ✅ ECC P-256 — Spring valida el JWT automáticamente con la llave pública de Supabase
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://tqffkpqrilbepibdmxdb.supabase.co/auth/v1/.well-known/jwks.json
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /api
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+app:
+  supabase:
+    url: https://tqffkpqrilbepibdmxdb.supabase.co
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+
+logging:
+  level:
+    com.duojava: DEBUG
+    org.springframework.security: INFO

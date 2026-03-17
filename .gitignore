@@ -1,0 +1,48 @@
+# ============================================
+# Spring Boot / Gradle
+# ============================================
+build/
+.gradle/
+out/
+*.class
+*.jar
+*.war
+
+# ============================================
+# Variables de entorno — NUNCA subir al repo
+# ============================================
+.env
+.env.local
+.env.*.local
+*.env
+
+# ============================================
+# IntelliJ IDEA
+# ============================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/shelf/
+
+# ============================================
+# macOS
+# ============================================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+spring-shell.log
+
+# ============================================
+# Archivos de configuración locales
+# ============================================
+application-local.yml
+application-local.properties
