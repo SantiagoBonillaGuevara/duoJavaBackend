@@ -4,9 +4,9 @@ spring:
 
   # Base de datos — Session Pooler Supabase
   datasource:
-    url: ${SUPABASE_DB_URL}
-    username: ${SUPABASE_DB_USER}
-    password: ${SUPABASE_DB_PASSWORD}
+    url: jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:5432/postgres #${SUPABASE_DB_URL}
+    username: postgres.tqffkpqrilbepibdmxdb #${SUPABASE_DB_USER}
+    password: ziPta7-kehnog-fimvyn #${SUPABASE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -32,7 +32,7 @@ spring:
           jwk-set-uri: https://tqffkpqrilbepibdmxdb.supabase.co/auth/v1/.well-known/jwks.json
 
 server:
-  port: ${PORT:8080}
+  port: 8080 #${PORT:8080}
   servlet:
     context-path: /api
 
@@ -47,9 +47,9 @@ app:
   supabase:
     url: https://tqffkpqrilbepibdmxdb.supabase.co
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+    allowed-origins: http://localhost:3000,http://localhost:5173 #${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
 
 logging:
   level:
     com.duojava: DEBUG
-    org.springframework.security: INFO
+    org.springframework.security: TRACE

@@ -45,4 +45,5 @@ spring-shell.log
 # Archivos de configuración locales
 # ============================================
 application-local.yml
+application.yml
 application-local.properties

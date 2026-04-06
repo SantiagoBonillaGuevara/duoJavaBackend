@@ -2,6 +2,7 @@ package com.duojava.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -15,7 +16,8 @@ import java.util.UUID;
 public class Profile {
 
     @Id
-    private UUID id; // mismo UUID que auth.users de Supabase
+    @Column(columnDefinition = "uuid")
+    private UUID id;
 
     @Column(unique = true)
     private String username;
@@ -43,8 +45,4 @@ public class Profile {
 
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "level_number", insertable = false, updatable = false)
-    private Level level;
 }
