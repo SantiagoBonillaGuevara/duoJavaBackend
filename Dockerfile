@@ -1,5 +1,5 @@
 # Paso 1: Compilar la aplicación (Usando una imagen con Gradle 8.7 y JDK 17 preinstalados)
-FROM gradle:8.7-jdk17 AS build
+FROM gradle:8.14-jdk17 AS build
 WORKDIR /app
 
 # Copiar los archivos de configuración (Ya no necesitamos gradlew ni la carpeta gradle)
