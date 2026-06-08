@@ -1,27 +1,22 @@
-# Paso 1: Compilar la aplicación (Usando Gradle Wrapper)
-FROM eclipse-temurin:17-jdk-jammy AS build
+# Paso 1: Compilar la aplicación (Usando una imagen con Gradle 8.7 y JDK 17 preinstalados)
+FROM gradle:8.7-jdk17 AS build
 WORKDIR /app
 
-# Copiar los archivos de configuración de Gradle para aprovechar la caché de capas
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle .
-COPY settings.gradle .
+# Copiar los archivos de configuración (Ya no necesitamos gradlew ni la carpeta gradle)
+COPY build.gradle settings.gradle ./
 
-# Dar permisos de ejecución y descargar dependencias (esto ayuda a que los builds sean más rápidos si no cambian las dependencias)
-RUN chmod +x ./gradlew
-RUN ./gradlew dependencies --no-daemon
+# Descargar dependencias usando el 'gradle' nativo de la imagen (sin el ./ del wrapper)
+RUN gradle dependencies --no-daemon
 
 # Copiar el código fuente y compilar el JAR
 COPY src src
-RUN ./gradlew bootJar -x test --no-daemon
+RUN gradle bootJar -x test --no-daemon
 
-# Paso 2: Imagen de ejecución (JRE más ligero)
+# Paso 2: Imagen de ejecución (Se mantiene idéntica, JRE ligero)
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Copiar el JAR generado desde la etapa de construcción
-# Spring Boot por defecto genera un archivo terminado en -SNAPSHOT.jar o similar
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Puerto configurado dinámicamente para Render
