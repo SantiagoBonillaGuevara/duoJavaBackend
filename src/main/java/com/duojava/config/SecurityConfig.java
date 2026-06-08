@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/courses/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/username-available").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/levels/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
