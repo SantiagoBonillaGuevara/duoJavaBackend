@@ -3,6 +3,7 @@ package com.duojava.service;
 import com.duojava.domain.entity.Course;
 import com.duojava.domain.entity.Lesson;
 import com.duojava.domain.entity.UserProgress;
+import com.duojava.dto.course.CourseWithProgressResponse;
 import com.duojava.dto.course.CurrentCourseResponse;
 import com.duojava.exception.ResourceNotFoundException;
 import com.duojava.repository.CourseRepository;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -84,6 +86,69 @@ public class CourseService {
                 progressPercent,
                 isCompleted
         );
+    }
+
+    public List<CourseWithProgressResponse> getAllCoursesWithProgress(UUID userId) {
+
+        List<Course> allCourses = courseRepository.findAllByIsPublishedTrueOrderByOrderIndexAsc();
+
+        List<CourseWithProgressResponse> result = new ArrayList<>();
+        boolean previousCourseCompleted = true; // el primer curso siempre está desbloqueado
+
+        for (Course course : allCourses) {
+
+            List<Lesson> lessons = lessonRepository.findByCourseIdOrderByOrderIndexAsc(course.getId());
+
+            int totalLessons = lessons.size();
+
+            // XP total del curso
+            int xpPotential = lessons.stream()
+                    .mapToInt(Lesson::getXpReward)
+                    .sum();
+
+            // Lecciones completadas por el usuario en este curso
+            List<UserProgress> completed = userProgressRepository.findCompletedLessonsByCourse(userId, course.getId());
+            int completedLessons = completed.size();
+
+            // XP ganado en este curso
+            int xpEarned = completed.stream()
+                    .mapToInt(up -> up.getScore() != null ? up.getScore() : 0)
+                    .sum();
+
+            int progressPercent = totalLessons > 0
+                    ? (int) Math.round((completedLessons * 100.0) / totalLessons)
+                    : 0;
+
+            // Determinar estado
+            CourseWithProgressResponse.CourseStatus status;
+            if (!previousCourseCompleted) {
+                status = CourseWithProgressResponse.CourseStatus.LOCKED;
+            } else if (completedLessons >= totalLessons && totalLessons > 0) {
+                status = CourseWithProgressResponse.CourseStatus.COMPLETED;
+            } else if (completedLessons > 0) {
+                status = CourseWithProgressResponse.CourseStatus.IN_PROGRESS;
+            } else {
+                status = CourseWithProgressResponse.CourseStatus.IN_PROGRESS; // primer curso sin empezar
+            }
+
+            // El siguiente curso se desbloquea solo si este está completo
+            previousCourseCompleted = (completedLessons >= totalLessons && totalLessons > 0);
+
+            result.add(new CourseWithProgressResponse(
+                    course.getId(),
+                    course.getTitle(),
+                    course.getDescription(),
+                    course.getOrderIndex(),
+                    totalLessons,
+                    completedLessons,
+                    progressPercent,
+                    xpPotential,
+                    xpEarned,
+                    status
+            ));
+        }
+
+        return result;
     }
 }
 
