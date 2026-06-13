@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/courses/current").authenticated()
                         .requestMatchers(HttpMethod.GET, "/courses/progress").authenticated()
                         .requestMatchers(HttpMethod.GET, "/courses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/leaderboard/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/username-available").permitAll()
                         .requestMatchers(HttpMethod.GET, "/levels/**").permitAll()
                         .anyRequest().authenticated()

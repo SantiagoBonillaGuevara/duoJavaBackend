@@ -28,6 +28,9 @@ public class Profile {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(name = "google_avatar_url")
+    private String googleAvatarUrl;
+
     @Column(nullable = false)
     private Integer xp;
 

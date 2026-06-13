@@ -9,9 +9,12 @@ public record ProfileResponse(
         String username,
         String displayName,
         String avatarUrl,
+        String googleAvatarUrl,
         Integer xp,
         Integer levelNumber,
         Integer streak,
         LocalDate lastActivityDate,
-        OffsetDateTime createdAt
+        OffsetDateTime createdAt,
+        Integer completedLessons,
+        Integer completedCourses
 ) {}

@@ -6,6 +6,7 @@ import com.duojava.dto.profile.UpdateProfileRequest;
 import com.duojava.exception.BusinessException;
 import com.duojava.exception.ResourceNotFoundException;
 import com.duojava.repository.ProfileRepository;
+import com.duojava.repository.UserProgressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,31 +20,20 @@ import java.util.UUID;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final UserProgressRepository userProgressRepository;
 
     // Obtener perfil del usuario autenticado
     public ProfileResponse getMyProfile(UUID userId) {
         Profile profile = profileRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Profile", userId));
-        return toResponse(profile);
-    }
 
-    // Crear perfil justo después del registro en Supabase
-    @Transactional
-    public ProfileResponse createProfile(UUID userId) {
-        if (profileRepository.existsById(userId)) {
-            return toResponse(profileRepository.findById(userId).get());
-        }
+        int completedLessons = (int) userProgressRepository
+                .countByUserIdAndCompletedTrue(userId);
 
-        Profile profile = Profile.builder()
-                .id(userId)
-                .xp(0)
-                .levelNumber(1)
-                .streak(0)
-                .createdAt(OffsetDateTime.now())
-                .updatedAt(OffsetDateTime.now())
-                .build();
+        int completedCourses = (int) userProgressRepository
+                .countCompletedCoursesByUser(userId);
 
-        return toResponse(profileRepository.save(profile));
+        return toResponse(profile, completedLessons, completedCourses);
     }
 
     // Actualizar username, displayName o avatarUrl
@@ -69,7 +59,7 @@ public class ProfileService {
 
         profile.setUpdatedAt(OffsetDateTime.now());
 
-        return toResponse(profileRepository.save(profile));
+        return toResponse(profileRepository.save(profile), 0, 0);
     }
 
     public Boolean isUsernameAvailable(String username) {
@@ -77,17 +67,20 @@ public class ProfileService {
     }
 
     // Mapper
-    private ProfileResponse toResponse(Profile p) {
+    private ProfileResponse toResponse(Profile p,int completedLessons, int completedCourses) {
         return new ProfileResponse(
                 p.getId(),
                 p.getUsername(),
                 p.getDisplayName(),
                 p.getAvatarUrl(),
+                p.getGoogleAvatarUrl(),
                 p.getXp(),
                 p.getLevelNumber(),
                 p.getStreak(),
                 p.getLastActivityDate(),
-                p.getCreatedAt()
+                p.getCreatedAt(),
+                completedLessons,
+                completedCourses
         );
     }
 }
